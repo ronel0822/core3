@@ -103,6 +103,80 @@ beginAtZero: true
   $(document).ready(function() {
     $('#example').DataTable();
 } );
+
+    var drugIds = [];
+    var quantities = [];
+    var names = [];
+    var amounts = [];
+    totals = 0;
+    $(document).ready(function() {
+      var count = <?php echo $count; ?>; 
+      for(var x = 0;x != count; x++){
+        $("#selector"+x).click(function() {
+          var quantity = parseFloat($("#quantity").val());
+          if(!isNaN(quantity) && quantity > 0){
+          document.getElementById("addToReceipt").removeAttribute("disabled");
+          $("#selection").empty();
+          var url_string = window.location.href;
+          var url = new URL(url_string);
+          var quantity = parseFloat($("#quantity").val());
+          var id = url.searchParams.get("id");
+          $("#selection").load("selection.php",{
+            newId : id,
+            quantity : quantity
+          });   
+          document.getElementById('quantity').value = '';
+          $("#quantityWarning").text("");
+        }else{
+            $("#quantityWarning").text("Required!");
+            document.getElementById("quantity").focus();
+          }
+        });
+      }
+    });
+
+    function addGetParameter(id){
+      window.history.replaceState(null, null, "?id="+id);
+    }
+
+
+    $(document).ready(function() {
+      $("#addToReceipt").click(function() {
+        var name = $("#drug_name").text();
+        var amount = parseFloat($("#drug_amount").text());
+        var quantity = parseFloat($("#drug_quantity").text());
+          quantities.push(quantity);
+          names.push(name);
+          amounts.push(amount);
+          var url_string = window.location.href;
+          var url = new URL(url_string);
+          var id = url.searchParams.get("id");
+          drugIds.push(id);
+          totals += amount;
+          $("#total").text(totals.toFixed(2));
+          $("#cart").append("<div class='row'><div class='col'>"+quantity+"</div><div class='col'>"+name+"</div><div class='col'>"+amount.toFixed(2)+"</div></div>");
+          document.getElementById("submit").removeAttribute("disabled");
+      });
+    });
+
+
+    $(document).ready(function(){
+      $("#submit").click(function(){
+        if(confirm("Are you sure?")){
+          var cash = parseFloat($("#cash").val());
+          $("#message").load("order.php",{
+            names : names,
+            quantities : quantities,
+            drugIds : drugIds,
+            cash : cash,
+            amounts : amounts
+          });
+          document.getElementById("submit").disabled = true;
+          document.getElementById("addToReceipt").disabled = true;
+        } 
+      });
+    });
+
 </script>
 </body>
 
