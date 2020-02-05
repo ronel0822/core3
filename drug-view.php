@@ -109,6 +109,7 @@ $stmt2 = $object->getStocks($_GET['id']);
 						</div>
 						<div class="col">
 							<?php
+
 				                $convert = new DateTime($row["expiration_date"]); //create datetime object with received data
 				                $date = $convert->format('M d, Y');
 				                echo "<small><strong>Date:</strong> ".$date."</small>";

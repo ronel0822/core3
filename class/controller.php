@@ -32,7 +32,7 @@ class controller extends Db{
 	}
     
     //Add Stocks
-    public function addStock($drugId,$quantity,$exirationDate){
+    public function addStock($drugId,$quantity,$expirationDate){
     	$query = "INSERT INTO core3_pharmacy_drug_stocks VALUES (null,?,?,NOW(),?);";
     	$stmt = $this->connect()->prepare($query);
 		$stmt->bindParam(1,$drugId);
@@ -90,6 +90,56 @@ class controller extends Db{
 		$stmt->execute();
 		return $transNo;
     }
+
+
+    public function viewTransaction(){
+		$datas = [[]];
+		$count = 1;
+		$query = "SELECT transactionNo FROM core3_pharmacy_payment GROUP BY transactionNo ORDER BY transactionNo ASC";
+		$pst = $this->connect()->prepare($query);
+		$pst->execute();
+		while ($row = $pst->fetch()) {
+			$sql = "SELECT * FROM core3_pharmacy_drug_transaction WHERE transactionNo = ? ORDER BY transactionNo DESC LIMIT 1";
+			$stmt = $this->connect()->prepare($sql);
+			$stmt->bindParam(1,$row['transactionNo']);
+			$stmt->execute();
+			if($row = $stmt->fetch()){
+				$datas[$count] = $row;
+				$count++;
+			}
+		}
+		return $datas;
+		/*
+		$transNo = null;
+		$query = "SELECT TOP 1 transactionNo FROM OMPOS_ordering ORDER BY transactionNo DESC ";
+		$pst = $this->connect()->prepare($query);
+		$pst->execute();
+		if($row = $pst->fetch()){
+			$transNo = $row['transactionNo'];
+		}else{
+			$transNo = 1;
+		}
+		$datas = [[]];
+		$sql = "SELECT TOP 1 * FROM OMPOS_ordering LEFT JOIN FO_guest_information ON OMPOS_ordering.guest_id = FO_guest_information.id WHERE transactionNo = ? ORDER BY transactionNo DESC";
+		for ($i=1; $i <= $transNo ; $i++) { 
+			$stmt = $this->connect()->prepare($sql);
+			$stmt->bindParam(1,$i);
+			$stmt->execute();
+			if($row = $stmt->fetch()){
+				$datas[$i] = $row;
+			}
+		}
+		return $datas;*/
+	}
+
+
+	public function viewTransactionView($id){
+		$query = "SELECT * FROM core3_pharmacy_drug_transaction INNER JOIN core3_pharmacy_drugs ON core3_pharmacy_drugs.drug_id = core3_pharmacy_drug_transaction.drug_id WHERE transactionNo = ? ORDER BY transactionNo DESC";
+		$stmt = $this->connect()->prepare($query);
+		$stmt->bindParam(1,$id);
+		$stmt->execute();
+		return $stmt;
+	}
 
 
 }

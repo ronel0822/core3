@@ -108,6 +108,7 @@ if(!$_SESSION['logged']){
         <div class="bg-white py-2 collapse-inner rounded">
           <h6 class="collapse-header">Herbal Med</h6>
           <a class="collapse-item" href="drug-list.php">List of Drugs</a>
+          <a class="collapse-item" href="drug-transaction.php">Drugs Transaction</a>
           <div class="collapse-divider"></div>
           <h6 class="collapse-header">Other Pages:</h6>
           <a class="collapse-item" href="inventory.php">Inventory</a>

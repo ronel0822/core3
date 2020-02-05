@@ -13,7 +13,7 @@
 
 	echo "
 		<div class='alert alert-success'>
-			<strong>Success! TransactionNo : <i id='transNo'>".$paymentId."</i></strong> <a href='index.php'>click here</a> to refresh.
+			<strong>Success! TransactionNo : <i id='transNo'>".$paymentId."</i></strong> <a href='pharmacy-cashier.php'>click here</a> to refresh.
 		</div>
 	";
 
