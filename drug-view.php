@@ -50,29 +50,65 @@ $stmt2 = $object->getStocks($_GET['id']);
 	                echo "<small>Date : &nbsp;<strong>".$date."</strong> &nbsp; Time: &nbsp;<strong>".$time."</strong></small>";
             	?>
             	</div>
-            <div class="col-6">
+            <div class="col-8">
             	<br>
 				<span>Price : 
 					<strong style="font-family:DejaVu Sans Mono; font-size:16px;">
-						<u>P <?php echo ucfirst($row['drug_price']);  ?>.00</u>
+						<u>Php <?php echo number_format($row['drug_price'],2);  ?></u>
 					</strong>
 				</span>
+			</div>
+			<div class="col">
+            	<br>
+				<h4>Available Stocks : 
+					<strong style="font-family:DejaVu Sans Mono;">
+							<?php 
+				  			if($row['current_stocks'] > 0){
+							echo $row['current_stocks'];
+				  			}else{
+				  			 	echo "0";
+				  			 }
+				  			?>
+					</strong>
+				</h4>
 			</div>
 			<div class="col-lg-12">
 				<hr>
 				<span style="font-size:22px;"><b>Description :</b></span>
 				<br>
 					&emsp;&emsp;&emsp;<?php echo ucfirst($row['drug_description']); ?>
-				<hr>
-				<span style="font-size:22px;"><b>Stocks :</b></span>
 			</div>
 			</div>
 		</div>
 	</div>
+
+		<div class="container">
+			<div class="container-fluid">
+				<hr>
+				<span style="font-size:22px;"><b>More Information :</b></span>
+				<div class="row" align="center">
+					<div class="col-4">
+						All Inserted Stocks : <strong><?php echo $row['all_stocks'] ?></strong>
+					</div>
+					<div class="col-4">
+						Sold : <strong><?php echo $row['sold'] ?></strong>
+					</div>
+					<div class="col-4">
+						Total Gained : PHP <strong><?php echo number_format($row['total_gained'],2); ?></strong>
+					</div>
+				</div>
+			</div>
+		</div>
 		
 	<?php
 		}
 	?>
+	<div class="container">
+		<div class="container-fluid">
+			<hr>
+			<span style="font-size:22px;"><b>Stocks Information :</b></span>
+		</div>
+	</div>
 	<div class="row" align="center">
 		<div class="col">
 			<b>Quantity</b>
@@ -84,7 +120,6 @@ $stmt2 = $object->getStocks($_GET['id']);
 			<b>Expiration Date</b>
 		</div>
 	</div>
-	<hr>
 		<?php
 			if($stmt2->rowCount() == 0){
 				?>
@@ -96,10 +131,10 @@ $stmt2 = $object->getStocks($_GET['id']);
 			while($row = $stmt2->fetch()){
 		?>
 					<div class="row" align="center">
-						<div class="col">
+						<div class="col-4">
 							<?php echo $row['stock_quantity']; ?>
 						</div>
-						<div class="col">
+						<div class="col-4">
 							<?php
 				                $convert = new DateTime($row["created_at"]); //create datetime object with received data
 				                $date = $convert->format('M d, Y'); 
@@ -107,18 +142,19 @@ $stmt2 = $object->getStocks($_GET['id']);
 				                echo "<small><strong>Date:</strong> ".$date." <strong>Time:</strong> ".$time."</small>";
 				            ?> 
 						</div>
-						<div class="col">
+						<div class="col-4">
 							<?php
 
 				                $convert = new DateTime($row["expiration_date"]); //create datetime object with received data
 				                $date = $convert->format('M d, Y');
 				                echo "<small><strong>Date:</strong> ".$date."</small>";
-				            ?> 
+				            ?>
 						</div>
 					</div>
 		<?php
 				}
 		?>
+	</div>
 </div>
 
 <!-- Modal -->

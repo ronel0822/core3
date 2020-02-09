@@ -4,7 +4,7 @@ include 'navigation-cashier.php';
 include 'class/db.php';
 include 'class/controller.php';
 $object = new Controller;
-$stmt = $object->getAllDrug();
+$stmt = $object->getAllDrugHavingStocks();
 $name = null;
 $amount = null;
 ?>
@@ -35,6 +35,7 @@ $amount = null;
 				      <th>Name</th>
 				      <th>Price</th>
 				      <th>Type</th>
+				      <th>Stocks</th>
 				      <th>Action</th>
 				  </tr>
 				</thead>
@@ -48,8 +49,25 @@ $amount = null;
 				      <td><?php echo ucfirst($row['drug_name']); ?></td>
 				      <td><?php echo number_format($row['drug_price'],2); ?></td>
 				      <td><?php echo ucfirst($row['drug_type']); ?></td>
+  				      	<td>
+  				  			<?php 
+  				  			if($row['current_stocks'] > 0){
+								echo $row['current_stocks'];
+  				  			}else{
+  				  			 	echo "0";
+  				  			 }
+  				  			?>
+  				      		</td>
 				      <td align="center">
-						<button id='selector<?php echo $count; ?>' title="Select" class='btn btn-outline-primary btn-sm' onclick='return addGetParameter(<?php echo $row['drug_id'] ?>)'><i class="fas fa-plus"></i></button>
+				      	<?php 
+			  			if($row['current_stocks'] > 0){
+							?>
+							<button id='selector<?php echo $count; ?>' title="Select" class='btn btn-outline-primary btn-sm' onclick='return addGetParameter(<?php echo $row['drug_id'] ?>)'><i class="fas fa-plus"></i></button>
+							<?php
+			  			}else{
+			  			 	echo "No Stocks";
+			  			 }
+			  			?>
 				      	</td>
 				  </tr>
 				  <?php

@@ -24,7 +24,31 @@ class controller extends Db{
 
 	// Viewing of Drug
 	public function getDrugById($id){
-		$query = "SELECT * FROM core3_pharmacy_drugs WHERE drug_id = ? ORDER BY drug_id DESC";
+		$query = "SELECT 
+					core3_pharmacy_drugs.drug_id,
+					core3_pharmacy_drugs.drug_name,
+					core3_pharmacy_drugs.drug_price,
+					core3_pharmacy_drugs.drug_type,
+					core3_pharmacy_drugs.drug_description,
+					core3_pharmacy_drugs.created_at,
+					IFNULL(SUM(stock_quantity), 0) as all_stocks,
+					IFNULL(SUM(quantity), 0) as sold,
+					SUM(stock_quantity) - IFNULL(SUM(quantity), 0) as current_stocks, 
+					core3_pharmacy_drugs.drug_price * IFNULL(SUM(quantity), 0) as total_gained 
+					FROM 
+					core3_pharmacy_drugs 
+					LEFT JOIN 
+					core3_pharmacy_drug_transaction 
+					ON 
+					core3_pharmacy_drugs.drug_id = core3_pharmacy_drug_transaction.drug_id
+					LEFT JOIN 
+					core3_pharmacy_drug_stocks
+					ON 
+					core3_pharmacy_drugs.drug_id = core3_pharmacy_drug_stocks.drug_id 
+					WHERE 
+					core3_pharmacy_drugs.drug_id = ? 
+					GROUP BY 
+					core3_pharmacy_drugs.drug_id ";
 		$stmt = $this->connect()->prepare($query);
 		$stmt->bindParam(1,$id);
 		$stmt->execute();
@@ -54,6 +78,7 @@ class controller extends Db{
 		return $stmt;
     }
 
+    //Cashier Transaction
     public function getItems($drugIds,$quantities,$cash,$amounts){
     	$transNo = null;
 		$total = 0;
@@ -91,7 +116,7 @@ class controller extends Db{
 		return $transNo;
     }
 
-
+    //Viewing of Cashier Transaction
     public function viewTransaction(){
 		$datas = [[]];
 		$count = 1;
@@ -133,10 +158,20 @@ class controller extends Db{
 	}
 
 
+	//Viewing of detailed Transaction
 	public function viewTransactionView($id){
 		$query = "SELECT * FROM core3_pharmacy_drug_transaction INNER JOIN core3_pharmacy_drugs ON core3_pharmacy_drugs.drug_id = core3_pharmacy_drug_transaction.drug_id WHERE transactionNo = ? ORDER BY transactionNo DESC";
 		$stmt = $this->connect()->prepare($query);
 		$stmt->bindParam(1,$id);
+		$stmt->execute();
+		return $stmt;
+	}
+
+
+	//Get all drugs that having stocks
+	public function getAllDrugHavingStocks(){
+		$query = "SELECT core3_pharmacy_drugs.drug_id, core3_pharmacy_drugs.drug_name, core3_pharmacy_drugs.drug_price, core3_pharmacy_drugs.drug_type, IFNULL(SUM(stock_quantity), 0) as all_stocks, IFNULL(SUM(quantity), 0) as sold, SUM(stock_quantity) - IFNULL(SUM(quantity), 0) as current_stocks FROM core3_pharmacy_drugs LEFT JOIN core3_pharmacy_drug_transaction ON core3_pharmacy_drugs.drug_id = core3_pharmacy_drug_transaction.drug_id LEFT JOIN core3_pharmacy_drug_stocks ON core3_pharmacy_drugs.drug_id = core3_pharmacy_drug_stocks.drug_id GROUP BY core3_pharmacy_drugs.drug_id ORDER BY current_stocks DESC";
+		$stmt = $this->connect()->prepare($query);
 		$stmt->execute();
 		return $stmt;
 	}
